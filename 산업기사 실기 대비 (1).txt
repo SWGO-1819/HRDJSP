@@ -1,0 +1,168 @@
+create table student_tbl_004(
+st_no varchar2(6) not null primary key,
+st_major varchar2(30) not null,
+st_nm varchar2(20) not null,
+st_addr varchar2(50),
+st_phone varchar(20),
+st_email varchar2(20),
+st_in_date date,
+st_out_date varchar2(30)
+);
+create table subject_tbl_004(
+sbj_cd varchar2(8) not null primary key,
+sbj_nm varchar2(20),
+sbj_fg varchar2(2)
+);
+create table exam_tbl_004(
+exam_ymd varchar2(8) not null ,
+exam_no varchar2(5) not null,
+exam_st_no varchar2(6) not null references student_tbl_004 (st_no),
+exam_sbj_cd varchar2(6) not null references subject_tbl_004(sbj_cd),
+exam_point1 number(3),
+exam_point2 number(3),
+primary key(exam_ymd ,exam_no )
+);
+create table person_tbl_004(
+p_no varchar2(10),
+p_nm varchar2(10),
+p_age varchar2(10)
+);
+
+insert into student_tbl_004 values('30501','유비쿼터스','강신일','서울시 송파구','01011112222','ksi@sdhs.kr','20170302','');
+insert into student_tbl_004 values('30502','유비쿼터스','김병철','서울시 강남구','01022223333','kbc@sdhs.kr','20170302','');
+insert into student_tbl_004 values('30503','유비쿼터스','김지원','서울시 송파구','01033334444','kjw@sdhs.kr','20170302','');
+insert into student_tbl_004 values('30504','유비쿼터스','박훈','서울시 성동구','01044445555','bh@sdhs.kr','20170302','');
+insert into student_tbl_004 values('30505','유비쿼터스','송중기','서울시 동작구','01055556666','sjk@sdhs.kr@sdhs.kr','20170302','');
+insert into student_tbl_004 values('30506','유비쿼터스','송혜교','서울시 용산구','01066667777','shk@sdhs.kr','20170302','');
+insert into student_tbl_004 values('30507','유비쿼터스','친구','서울시 광진구','01077778888','jg@sdhs.kr','20170302','');
+
+insert into subject_tbl_004 values('A001','HTML','Y');
+insert into subject_tbl_004 values('A002','JAVA','Y');
+insert into subject_tbl_004 values('A003','PHP','Y')
+insert into subject_tbl_004 values('A004','JAVASCRIPT','Y');
+insert into subject_tbl_004 values('A005','CSS','Y');
+insert into subject_tbl_004 values('B001','국어','N');
+insert into subject_tbl_004 values('B002','영어','N');
+insert into subject_tbl_004 values('B003','수학','N');
+
+insert into exam_tbl_004 values('20190412','0001','30501','A001','80','60');
+insert into exam_tbl_004 values('20190412','0002','30502','A001','70','80');
+insert into exam_tbl_004 values('20190412','0003','30503','A001','90','85');
+insert into exam_tbl_004 values('20190412','0004','30504','A001','100','95');
+insert into exam_tbl_004 values('20190412','0005','30505','A001','65','75');
+insert into exam_tbl_004 values('20190412','0006','30506','A001','50','65');
+insert into exam_tbl_004 values('20190412','0007','30507','A001','80','85');
+insert into exam_tbl_004 values('20190412','0008','30501','B002','70','50');
+insert into exam_tbl_004 values('20190412','0009','30502','B002','70','70');
+insert into exam_tbl_004 values('20190412','0010','30503','B002','80','65');
+insert into exam_tbl_004 values('20190412','0011','30504','B002','80','95');
+insert into exam_tbl_004 values('20190412','0012','30505','B002','65','70');
+insert into exam_tbl_004 values('20190412','0013','30506','B002','55','75');
+insert into exam_tbl_004 values('20190412','0014','30507','B002','80','85');
+
+2번문제
+create sequence student_number
+start with 8
+increment by 1;
+
+create sequence exam_number
+start with 100
+increment by 1;
+
+2-1문제
+select exam_number.nextval from dual;
+2-2문제
+select exam_number.currval from dual;
+
+
+3번문제
+select to_char(sysdate,'YYY-MM-DD') from dual;
+4번문제
+select substr(replace(st_no,0,''),0,1) grade,substr(replace(st_no,0,''),2,1) class,substr(replace(st_no,0,'') ,3,1) num,st_major,st_nm
+from student_tbl_004;
+
+5문제
+select a.st_no,a.st_nm,a.st_major,b.exam_point1,b.exam_point2,to_number(round(avg(b.exam_point1+b.exam_point2)/2)) total,
+case
+when to_number(round(avg(b.exam_point1+b.exam_point2)/2))>='90' then 'A'
+when to_number(round(avg(b.exam_point1+b.exam_point2)/2))>='80' then 'B'
+when to_number(round(avg(b.exam_point1+b.exam_point2)/2))>='70' then 'C'
+when to_number(round(avg(b.exam_point1+b.exam_point2)/2))>='60' then 'D'
+when to_number(round(avg(b.exam_point1+b.exam_point2)/2))<'60' then 'F'
+END as total2
+from student_tbl_004 a , exam_tbl_004 b
+where a.st_no = b.exam_st_no  and b.exam_sbj_cd='A001'
+group by a.st_no,a.st_nm,a.st_major,b.exam_point1,b.exam_point2
+order by a.st_no;
+
+5-2문제
+create sequences ???
+start with ??
+increment by ??
+
+5-3문제
+select * from(
+select a.st_no,a.st_nm,to_number(round(avg(b.exam_point1+b.exam_point2)/2)),
+case
+when to_number(round(avg(b.exam_point1+b.exam_point2)/2))>=90 then 'A'
+when to_number(round(avg(b.exam_point1+b.exam_point2)/2))>=80 then 'B'
+when to_number(round(avg(b.exam_point1+b.exam_point2)/2))>=70 then 'C'
+when to_number(round(avg(b.exam_point1+b.exam_point2)/2))>=60 then 'D'
+when to_number(round(avg(b.exam_point1+b.exam_point2)/2))<60 then 'F'
+END as total
+from student_tbl_004 a , exam_tbl_004 b
+where a.st_no = b.exam_st_no and b.exam_sbj_cd='A001'
+group by a.st_no,a.st_nm
+)
+where total = 'B'
+order by st_no;
+
+5-4문제
+select rownum,st_no,exam_point1,exam_point2,total from(
+select a.st_no,b.exam_point1,b.exam_point2,to_number(avg(b.exam_point1+b.exam_point2)/2) total
+from student_tbl_004 a , exam_tbl_004 b
+where a.st_no = b.exam_st_no and b.exam_sbj_cd='A001'
+group by a.st_no,b.exam_point1,b.exam_point2
+order by total desc
+)
+where rownum<=3;
+
+5-5문제
+select * from(
+select a.st_no,a.st_nm,a.st_major,sum(b.exam_point1+b.exam_point2),avg(b.exam_point1+b.exam_point2)/2 total
+from student_tbl_004 a , exam_tbl_004 b
+where a.st_no = b.exam_st_no 
+group by a.st_no,a.st_nm,a.st_major
+order by total desc
+)
+where rownum<=3;
+
+5-6문제
+
+select ((select a.st_nm from exam_tbl_004 b, student_tbl_004 a where a.st_no = b.exam_st_no and exam_point1=point1)||'('||point1||')점')  ,(select a.st_nm from exam_tbl_004 b, student_tbl_004 a where a.st_no = b.exam_st_no and exam_point2=point2)||'('||point2||')점' from(
+select min(exam_point1) point1,min(exam_point2) point2
+from student_tbl_004 a , exam_tbl_004 b
+where a.st_no = b.exam_st_no and b.exam_sbj_cd='B002'
+);
+
+5-7문제
+update exam_tbl_004 set exam_point1='55' where exam_st_no='30506' and exam_sbj_cd='A001';
+
+5-8문제
+update student_tbl_004 set st_addr='서울시 서초구' where st_no='30503' ;
+
+5-9문제
+delete from student_tbl_004 where st_cd=30502;
+
+5-10문제
+update student_tbl_004 set st_out_date=to_char(sysdate,'yyyyddmm') ;
+
+5-11문제
+delete from student_tbl_004 where st_cd=30501;
+
+6문제
+drop table person_tbl_004;
+
+
+
+
