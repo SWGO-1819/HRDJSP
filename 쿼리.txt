@@ -1,0 +1,76 @@
+create table member_tbl_005(
+cust_no varchar2(5) not null primary key,
+cust_nm varchar2(20),
+phone varchar2(11),
+address varchar2(50),
+join_date date,
+point number(7),
+join_route varchar2(2)
+);
+create table movie_tbl_005(
+movie_cd varchar2(11) not null primary key,
+movie_nm varchar2(30),
+movie_fg varchar2(2),
+play_date date
+);
+create table reserve_tbl_005(
+r_ymd varchar2(8) not null,
+r_seq varchar2(5) not null,
+r_cust_no varchar2(5) not null references member_tbl_005(cust_no),
+r_movie_cd varchar2(11) not null references movie_tbl_005(movie_cd),
+morning_fg varchar(1),
+primary key(r_ymd,r_seq)
+);
+insert into member_tbl_005 values('10001','공유','01011112222','서울시 용산구','20190301','2500','01');
+insert into member_tbl_005 values('10002','정유미','01022223333','서울시 중구','20190308','2000','02');
+insert into member_tbl_005 values('10003','마동석','01033334444','서울시 영등포구','20190311','13000','01');
+insert into member_tbl_005 values('10004','김수안','01044445555','서울시 마포구','20190324','500','03');
+insert into member_tbl_005 values('10005','김의성','01055556666','서울시 은평구','20190327','0','01');
+insert into member_tbl_005 values('10006','최우식','01066667777','서울시 종로구','20190405','7000','01');
+insert into member_tbl_005 values('10007','안소희','01077778888','서울시 서대문구','20190409','1000','03');
+insert into member_tbl_005 values('10008','최귀화','01088889999','서울시 구로구','20190414','11000','02');
+
+insert into movie_tbl_005 values('20190303001','어스','03','20190327');
+insert into movie_tbl_005 values('20190301002','헬보이','01','20190410');
+insert into movie_tbl_005 values('20190402001','생일','02','20190403');
+insert into movie_tbl_005 values('20190402002','크게될놈','02','20190418');
+insert into movie_tbl_005 values('20190403003','요로나의저주','03','20190417');
+insert into movie_tbl_005 values('20190401004','어벤져스엔드게임','01','20190424');
+
+insert into reserve_tbl_005 values('20190418','0001','10001','20190401004','N');
+insert into reserve_tbl_005 values('20190418','0002','10004','20190401004','N');
+insert into reserve_tbl_005 values('20190418','0003','10002','20190402001','N');
+insert into reserve_tbl_005 values('20190418','0004','10003','20190402001','N');
+insert into reserve_tbl_005 values('20190418','0005','10005','20190301002','Y');
+insert into reserve_tbl_005 values('20190418','0006','10003','20190301002','Y');
+insert into reserve_tbl_005 values('20190418','0007','10005','20190401004','Y');
+insert into reserve_tbl_005 values('20190418','0008','10003','20190401004','N');
+insert into reserve_tbl_005 values('20190418','0009','10005','20190402002','Y');
+insert into reserve_tbl_005 values('20190418','0010','10003','20190301002','N');
+insert into reserve_tbl_005 values('20190418','0011','10008','20190403003','Y');
+insert into reserve_tbl_005 values('20190418','0012','10002','20190401004','N');
+insert into reserve_tbl_005 values('20190418','0013','10007','20190301002','N');
+insert into reserve_tbl_005 values('20190418','0014','10001','20190401004','N');
+insert into reserve_tbl_005 values('20190418','0015','10007','20190402002','N');
+insert into reserve_tbl_005 values('20190418','0016','10005','20190402001','N');
+
+create sequences reserve_number
+start with 14
+increment by 1;
+
+select rank() over (order by round(to_number((count(b.r_movie_cd)/16)*100),1)) ranktotal,a.movie_nm,round(to_number((count(b.r_movie_cd)/16)*100),1),count(r_movie_cd) ,a.play_date from movie_tbl_005 a, reserve_tbl_005 b where a.movie_cd=b.r_movie_cd group by a.movie_nm,a.play_date union all select 6,movie_nm,0,0,play_date from movie_tbl_005 where movie_nm='어스'
+
+select cust_no,cust_nm,phone,address,join_date,point,join_route,(case when point>=10000 then 'VVIP' when point>=5000 then 'VIP' else '일반' end) from movie_tbl_005 order by cust_no;
+
+select cust_no,cust_nm,phone,address,join_date,point,join_route,(case when point>=10000 then 'VVIP' when point>=5000 then 'VIP' else '일반' end) from movie_tbl_005 order by point DESC;
+
+select (case when point>=10000 then 'VVIP' when point>=5000 then 'VIP' else '일반' end) grade,sum(point) from movie_tbl_005 group by grade;
+
+select cust_nm,join_date from movie_tbl_005 where sysdate-30>join_date;
+
+select * from(select cust_no,cust_nm, count(r_cust_no) ranktop from member_tbl_005 ,reserve_tbl_005 where cust_no=r_cust_no group by cust_nm order by ranktop) where rownum=1;
+
+select r_ymd,count(r_ymd) total from reserve_tbl_005 group by r_ymd order by total;
+
+
+
